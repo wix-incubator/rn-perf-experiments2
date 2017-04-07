@@ -69,9 +69,14 @@ export default class example extends Component {
   }
   onSimulateBusyAppPress(value) {
     if (value) {
-      setInterval(() => {
+      this.timer = setInterval(() => {
         for (let i=0; i<5e8; i++) {}
       }, 500);
+    } else {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = undefined;
+      }
     }
     this.setState({simulateBusyApp: value});
   }
