@@ -6,7 +6,8 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  Text
+  Text,
+  Switch
 } from 'react-native';
 
 import JavaScriptSetState from './JavaScriptSetState';
@@ -18,7 +19,8 @@ export default class example extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentExample: undefined
+      currentExample: undefined,
+      simulateBusyApp: false
     }
   }
   render() {
@@ -43,6 +45,13 @@ export default class example extends Component {
     }
     return (
       <ScrollView style={styles.menuContainer}>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Simulate busy app: </Text>
+          <Switch
+            value={this.state.simulateBusyApp}
+            onValueChange={this.onSimulateBusyAppPress.bind(this)}
+          />
+        </View>
         <TouchableOpacity onPress={this.onExamplePress.bind(this, JavaScriptSetState)}>
           <Text style={styles.button}>JavaScript SetState</Text>
         </TouchableOpacity>
@@ -57,6 +66,14 @@ export default class example extends Component {
   }
   onMenuPress() {
     this.setState({currentExample: undefined});
+  }
+  onSimulateBusyAppPress(value) {
+    if (value) {
+      setInterval(() => {
+        for (let i=0; i<5e8; i++) {}
+      }, 500);
+    }
+    this.setState({simulateBusyApp: value});
   }
 }
 
@@ -82,7 +99,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     flex: 1,
     paddingTop: 30,
-    paddingLeft: 40,
+    paddingHorizontal: 40,
     backgroundColor: '#223f6b'
   },
   menuIcon: {
@@ -103,6 +120,20 @@ const styles = StyleSheet.create({
     color: '#F09B95',
     fontSize: 20,
     marginBottom: 24
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    marginBottom: 40,
+    backgroundColor: '#a0a0a0',
+    borderRadius: 6
+  },
+  switchLabel: {
+    fontSize: 16,
+    marginRight: 10,
+    color: 'black'
   }
 });
 
