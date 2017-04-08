@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
-import { View, Image, ListView, ScrollView, Text } from 'react-native';
+import ReactNative, { View, Image, ListView, ScrollView, Text, requireNativeComponent } from 'react-native';
 import styles from './styles';
 
+const NativeWrapper = requireNativeComponent('RPENativeWrapper');
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
 export default class NativeScrollListener extends PureComponent {
@@ -9,22 +10,18 @@ export default class NativeScrollListener extends PureComponent {
     super(props);
     this.state = {
       dataSource: ds.cloneWithRows(this.props.data),
-      imageOpacity: 1,
-      imageScale: 1
+      scrollViewHandle: undefined
     };
   }
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={[styles.backgroundImage, {
-            opacity: this.state.imageOpacity,
-            transform: [{
-              scale: this.state.imageScale
-            }]
-          }]}
-          source={require('../img/bg.jpg')}
-        />
+        <NativeWrapper scrollViewHandle={this.state.scrollViewHandle}>
+          <Image
+            style={styles.backgroundImage}
+            source={require('../img/bg.jpg')}
+          />
+        </NativeWrapper>
         <ListView
           dataSource={this.state.dataSource}
           renderRow={this.renderRow.bind(this)}
@@ -48,27 +45,11 @@ export default class NativeScrollListener extends PureComponent {
     return (
       <ScrollView
         {...props}
-        scrollEventThrottle={16}
-        onScroll={this.onScroll.bind(this)}
+        ref={(element) => {
+          const handle = ReactNative.findNodeHandle(element);
+          this.setState({scrollViewHandle: handle});
+        }}
       />
     );
-  }
-  onScroll(event) {
-    const scrollY = event.nativeEvent.contentOffset.y;
-    if (scrollY >= 0) {
-      let newOpacity = 1 - (scrollY / 250);
-      if (newOpacity < 0) newOpacity = 0;
-      this.setState({
-        imageOpacity: newOpacity,
-        imageScale: 1
-      });
-    } else {
-      let newScale = 1 + 0.4*(-scrollY / 200);
-      if (newScale > 1.4) newScale = 1.4;
-      this.setState({
-        imageOpacity: 1,
-        imageScale: newScale
-      });
-    }
   }
 }
