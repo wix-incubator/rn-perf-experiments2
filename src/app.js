@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import JavaScriptSetState from './JavaScriptSetState';
+import NativeScrollListener from './NativeScrollListener';
 import AnimatedScrollView from './AnimatedScrollView';
 
 const data = [{key: 'a', text: 'Card 1'}, {key: 'b', text: 'Card 2'}, {key: 'c', text: 'Card 3'}, {key: 'd', text: 'Card 4'}, {key: 'e', text: 'Card 5'}, {key: 'f', text: 'Card 6'}, {key: 'g', text: 'Card 7'}, {key: 'h', text: 'Card 8'}];
@@ -53,10 +54,13 @@ export default class example extends Component {
           />
         </View>
         <TouchableOpacity onPress={this.onExamplePress.bind(this, JavaScriptSetState)}>
-          <Text style={styles.button}>JavaScript SetState</Text>
+          <Text style={styles.button}>JavaScript SetState{'\n'}<Text style={styles.subtitle}>(JS only, relies on bridge)</Text></Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.onExamplePress.bind(this, NativeScrollListener)}>
+          <Text style={styles.button}>Native ScrollListener{'\n'}<Text style={styles.subtitle}>(native+JS, does not rely on bridge)</Text></Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={this.onExamplePress.bind(this, AnimatedScrollView)}>
-          <Text style={styles.button}>Animated ScrollView</Text>
+          <Text style={styles.button}>Animated ScrollView{'\n'}<Text style={styles.subtitle}>(JS only, does not rely on bridge)</Text></Text>
         </TouchableOpacity>
       </ScrollView>
     );
@@ -125,6 +129,10 @@ const styles = StyleSheet.create({
     color: '#F09B95',
     fontSize: 20,
     marginBottom: 24
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#c0c0c0'
   },
   switchContainer: {
     flexDirection: 'row',
