@@ -56,17 +56,17 @@ export default class JavaScriptSetState extends PureComponent {
   onScroll(event) {
     const scrollY = event.nativeEvent.contentOffset.y;
     if (scrollY >= 0) {
-      let newOpacity = 1 - (scrollY / 250);
+      let newOpacity = 1.0 - (scrollY / 250.0);
       if (newOpacity < 0) newOpacity = 0;
       this.setState({
         imageOpacity: newOpacity,
-        imageScale: 1
+        imageScale: 1.0
       });
     } else {
-      let newScale = 1 + 0.4*(-scrollY / 200);
+      let newScale = 1.0 + 0.4*(-scrollY / 200.0);
       if (newScale > 1.4) newScale = 1.4;
       this.setState({
-        imageOpacity: 1,
+        imageOpacity: 1.0,
         imageScale: newScale
       });
     }

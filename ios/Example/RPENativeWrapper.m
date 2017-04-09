@@ -11,13 +11,12 @@
 #import <React/RCTScrollableProtocol.h>
 
 @interface RPENativeWrapper()
-@property (nonatomic) UIView<RCTScrollableProtocol> *scrollable;
+@property (nonatomic) RCTBridge *bridge;
+@property (nonatomic) UIView<RCTScrollableProtocol> *scrollableView;
 @end
 
 @implementation RPENativeWrapper
 
-RCTBridge *_bridge;
-RCTUIManager *_uiManager;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -25,13 +24,12 @@ RCTUIManager *_uiManager;
   
   if ((self = [super initWithFrame:CGRectZero]))
   {
-    _bridge = bridge;
-    while ([_bridge respondsToSelector:NSSelectorFromString(@"parentBridge")]
-           && [_bridge valueForKey:@"parentBridge"])
+    self.bridge = bridge;
+    while ([self.bridge respondsToSelector:NSSelectorFromString(@"parentBridge")]
+           && [self.bridge valueForKey:@"parentBridge"])
     {
-      _bridge = [_bridge valueForKey:@"parentBridge"];
+      self.bridge = [self.bridge valueForKey:@"parentBridge"];
     }
-    _uiManager = _bridge.uiManager;
   }
   
   return self;
@@ -39,10 +37,10 @@ RCTUIManager *_uiManager;
 
 - (void)dealloc
 {
-  if (self.scrollable)
+  if (self.scrollableView)
   {
-    [self.scrollable removeScrollListener:self];
-    self.scrollable = nil;
+    [self.scrollableView removeScrollListener:self];
+    self.scrollableView = nil;
   }
 }
 
@@ -55,15 +53,14 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
   _scrollViewHandle = scrollViewHandle;
   
   dispatch_async(RCTGetUIManagerQueue(), ^{
-  
-    [_bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry)
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry)
     {
       UIView *view = viewRegistry[scrollViewHandle];
       if ([view conformsToProtocol:@protocol(RCTScrollableProtocol)])
       {
-        if (self.scrollable) return;
-        self.scrollable = (UIView<RCTScrollableProtocol>*)view;
-        [self.scrollable addScrollListener:self];
+        if (self.scrollableView) return;
+        self.scrollableView = (UIView<RCTScrollableProtocol>*)view;
+        [self.scrollableView addScrollListener:self];
       }
       else
       {
@@ -71,7 +68,6 @@ RCT_NOT_IMPLEMENTED(-initWithCoder:(NSCoder *)aDecoder)
                     "with tag #%@", view, scrollViewHandle);
       }
    }];
-    
   });
 
 }
